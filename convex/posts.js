@@ -261,3 +261,53 @@ export const deletePost = mutation({
         return { success: true };
     },
 });
+
+export const duplicate = mutation({
+    args: { id: v.id("posts") },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Not Authenticated");
+        }
+
+        const user = await ctx.db
+            .query("users")
+            .filter((q) =>
+                q.eq(q.field("tokenIdentifier"), identity.tokenIdentifier),
+            )
+            .unique();
+
+        if (!user) {
+            throw new Error("User Not Found");
+        }
+
+        const post = await ctx.db.get(args.id);
+        if (!post) {
+            throw new Error("Post Not Found");
+        }
+
+        if (post.authorId !== user._id) {
+            throw new Error("Not Authorized To Duplicate This Post");
+        }
+
+        const now = Date.now();
+
+        const newPostId = await ctx.db.insert("posts", {
+            title: `${post.title} (Copy)`,
+            content: post.content,
+            status: "draft",
+            authorId: user._id,
+            tags: post.tags,
+            category: post.category,
+            featuredImage: post.featuredImage,
+            createdAt: now,
+            updatedAt: now,
+            publishedAt: undefined,
+            scheduledFor: undefined,
+            viewCount: 0,
+            likeCount: 0,
+        });
+
+        return newPostId;
+    },
+});
