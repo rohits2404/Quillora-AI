@@ -9,6 +9,7 @@
  */
 
 import type * as dashboard from "../dashboard.js";
+import type * as feed from "../feed.js";
 import type * as follows from "../follows.js";
 import type * as posts from "../posts.js";
 import type * as users from "../users.js";
@@ -21,6 +22,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
     dashboard: typeof dashboard;
+    feed: typeof feed;
     follows: typeof follows;
     posts: typeof posts;
     users: typeof users;
