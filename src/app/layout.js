@@ -2,6 +2,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { ClerkProvider } from "@clerk/nextjs";
+import { ConvexClientProvider } from "@/providers/convex-client-provider";
+import { Header } from "@/components/header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,10 +24,16 @@ export default function RootLayout({ children }) {
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <main className="bg-slate-900 min-h-screen text-white overflow-x-hidden">
-                        <Toaster richColors />
-                        {children}
-                    </main>
+                    <ClerkProvider>
+                        <ConvexClientProvider>
+                            <Header />
+                            <main className="bg-slate-900 min-h-screen text-white overflow-x-hidden">
+                                <Toaster richColors />
+
+                                {children}
+                            </main>
+                        </ConvexClientProvider>
+                    </ClerkProvider>
                 </ThemeProvider>
             </body>
         </html>
